@@ -8,22 +8,34 @@ need to create `environment.ts`. You can copy/paste this sample
 and modify it to your needs:
 ```
 export default <Environment> {
+
+    // Set to update and check IPv4 and IPv6 records
     updateIPv4: true,
     updateIPv6: true,
+
+    // Specify the IPv4 and IPv6 getter functions
     getIPv4: GetIP.ip4External,
     getIPv6: GetIP.ip6External,
+
+    // Interval in seconds
     interval: 1,
+
+    // Cloudflare Accounts
     accounts: [
         {
+            // Specify account details
             apiKey: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
             email: "email@example.com",
+
+            // Specify domains linked to that account
             domains: [
                 {
+                    // Specify the domain name and the zone id
                     name: "example.com",
                     zone_id: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
                 },
             ]
-        }
+        },
     ]
 }
 ```
@@ -94,3 +106,19 @@ npm run build
 This will also generate `cloudflareupdater.service`.
 You must keep these files here otherwise the cloudflare
 updater daemon won't work.
+
+## API Key
+
+You will need your API Key from cloudflare so the API
+can access your account to update your domains.
+```
+My Profile > API Tokens > API Key > Global API Key
+```
+
+## Zone ID
+
+You will need the zone id per domain name to access the
+domains records.
+```
+yourdomain.com > Overview > API > Zone ID
+```
