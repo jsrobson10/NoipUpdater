@@ -1,2 +1,4 @@
 node_modules
 build
+cloudflareupdater.service
+src/environment.ts

@@ -18,57 +18,59 @@ export interface Record {
 
 export const UpdateRecords = async (ip: string, type: "A" | "AAAA") =>
 {
-    for(const { name, zone_id } of environment.domains) {
-        try {
-
-            let cloudflareHeaders = {
-                "X-Auth-Email": environment.email,
-                "X-Auth-Key": environment.apiKey,
-                "Content-Type": "application/json",
-            };
-
-            let queryResponse = await axios.get(
-                CLOUDFLARE_QUERY_RECORD(zone_id),
-                {
-                    params: {
-                        name: name
-                    },
-                    headers: cloudflareHeaders
-                }
-            );
-
-            let record: Record | undefined;
-
-            for(let r of queryResponse.data.result as Record[]) {
-                if(r.type === type) {
-                    record = r;
-                }
-            }
-
-            if(record) {
-                let updateResponse = await axios.put(
-                    CLOUDFLARE_UPDATE_RECORD(zone_id, record.id),
+    for(let account of environment.accounts) {
+        for(const { name, zone_id } of account.domains) {
+            try {
+    
+                let cloudflareHeaders = {
+                    "X-Auth-Email": account.email,
+                    "X-Auth-Key": account.apiKey,
+                    "Content-Type": "application/json",
+                };
+    
+                let queryResponse = await axios.get(
+                    CLOUDFLARE_QUERY_RECORD(zone_id),
                     {
-                        type: record.type,
-                        name: record.name,
-                        content: ip,
-                    }, {
+                        params: {
+                            name: name
+                        },
                         headers: cloudflareHeaders
                     }
                 );
     
-                if(updateResponse.status !== 200) {
-                    console.log("Domain "+name+" with record "+type+" failed with status "+updateResponse.status);
-                } else {
-                    console.log("Updated "+name+" with record "+type+" to "+ip);
+                let record: Record | undefined;
+    
+                for(let r of queryResponse.data.result as Record[]) {
+                    if(r.type === type) {
+                        record = r;
+                    }
                 }
-            } else {
-                console.log("record is undefined");
+    
+                if(record) {
+                    let updateResponse = await axios.put(
+                        CLOUDFLARE_UPDATE_RECORD(zone_id, record.id),
+                        {
+                            type: record.type,
+                            name: record.name,
+                            content: ip,
+                        }, {
+                            headers: cloudflareHeaders
+                        }
+                    );
+        
+                    if(updateResponse.status !== 200) {
+                        console.log("Domain "+name+" with record "+type+" failed with status "+updateResponse.status);
+                    } else {
+                        console.log("Updated "+name+" with record "+type+" to "+ip);
+                    }
+                } else {
+                    console.log("record is undefined");
+                }
+    
+            } catch(e) {
+                console.log("Domain "+name+" with record "+type+" failed with error.");
+                console.log(e);
             }
-
-        } catch(e) {
-            console.log("Domain "+name+" with record "+type+" failed with error.");
-            console.log(e);
         }
     }
 }

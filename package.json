@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon -e ts,js --exec \"ts-node ./src/main.ts\"",
-    "build": "tsc",
-    "production:start": "cd build && node main.js"
+    "build": "tsc && node build/build.js",
+    "production:start": "cd build && node main.js",
+    "install": "node build/install.js"
   },
   "repository": {
     "type": "git",
